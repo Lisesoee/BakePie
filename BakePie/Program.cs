@@ -8,8 +8,8 @@ namespace BakePie
 {
     class Program
     {
-        private static RestClient restClient = new RestClient("https://localhost:7042/RhubarbFillingService/");
-        //private static RestClient restClient = new RestClient("http://rhubarbfillingservice/RhubarbFillingService/");
+        //private static RestClient restClient = new RestClient("https://localhost:7042/RhubarbFillingService/");
+        private static RestClient restClient = new RestClient("http://rhubarbfillingservice/RhubarbFillingService/");
 
         static void Main(string[] args)
         {
@@ -59,7 +59,7 @@ namespace BakePie
 
             // If we cannot get our favorite filling, then use default filling instead...
             Filling applePieFilling = new Filling(FillingType.Apple);
-            Thread.Sleep(5000);
+            Thread.Sleep(2000);
             applePieFilling.isDone = true;
 
             if (task.Status == TaskStatus.RanToCompletion)
@@ -75,7 +75,7 @@ namespace BakePie
 
         private static bool BakeCrust(Crust crust)
         {            
-            Thread.Sleep(7000);
+            Thread.Sleep(4000);
             crust.IsDone = true;
             return true;
         }

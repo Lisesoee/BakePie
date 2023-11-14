@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  rhubarbfillingservice:
+    image: ${DOCKER_REGISTRY-}rhubarbfillingservice
+    build:
+      context: .
+      dockerfile: RhubarbFillingService/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  bakepie:
+    image: ${DOCKER_REGISTRY-}bakepie
+    build:
+      context: .
+      dockerfile: BakePie/Dockerfile
+

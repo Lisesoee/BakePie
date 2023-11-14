@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BakePie": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
