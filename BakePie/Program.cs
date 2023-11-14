@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,10 @@ namespace BakePie
 
         private static void BakePie()
         {
+            var timer = new Stopwatch();
+            Console.WriteLine("Baking pie...");
+            timer.Start();
+
             bool fillingFinished;
             Crust crust;
             crust = PrepareCrust();
@@ -26,6 +31,10 @@ namespace BakePie
 
             FinishPie(futureCrust.Result, fillingFinished);
 
+            timer.Stop();
+
+            TimeSpan timeTaken = timer.Elapsed;
+            Console.WriteLine("Pie finished baking. Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
 
         }
 
