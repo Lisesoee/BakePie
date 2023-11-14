@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ namespace BakePie
 {
     class Program
     {
+        private static RestClient restClient = new RestClient("http://xxxfillingservice/XxxFillingService/"); // TODO: url
+
         static void Main(string[] args)
         {
 
@@ -19,7 +22,6 @@ namespace BakePie
             Console.WriteLine("Baking pie...");
             timer.Start();
 
-            bool fillingFinished;
             Crust crust;
             crust = PrepareCrust();
 
@@ -34,7 +36,7 @@ namespace BakePie
             timer.Stop();
 
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("Pie finished baking. Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
+            Console.WriteLine("Pie finished baking. Filling = " + pieFilling.FillingType +". Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
 
         }
 
@@ -50,10 +52,24 @@ namespace BakePie
 
         private static Filling PrepareFilling()
         {
-            Filling applePieFilling = new Filling(FillingType.Apple);
-            applePieFilling.isDone = true;
+            // Try to get your favorite filling using a "fire-and-hope" approach
+            Filling pieFilling;
+            var task = restClient.GetAsync<Filling>(new RestRequest("/filling")); // TODO: URL
 
+            // If we cannot get our favorite filling, then use apple filling instead...
+            Filling applePieFilling = new Filling(FillingType.Apple);
             Thread.Sleep(5000);
+
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                pieFilling = task.Result;
+            } else
+            {
+                pieFilling = applePieFilling;
+            }
+
+            pieFilling.isDone = true;
+
             return applePieFilling;
         }
 
