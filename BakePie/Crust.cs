@@ -6,8 +6,9 @@ namespace BakePie
 {
     class Crust
     {
-        Boolean isDone;
-        Boolean isBurned;
+        Boolean isDone { get; set; }
+        Boolean isBurned { get; set; }
+        public Filling pieFilling { get; set; }
 
         public bool IsBurned { get => isBurned; set => isBurned = value; }
         public bool IsDone { get => isDone; set => isDone = value; }

@@ -27,9 +27,9 @@ namespace BakePie
 
             BakeCrust(crust);
 
-            fillingFinished = PrepareFilling();
+            Filling pieFilling = PrepareFilling();
 
-            FinishPie(futureCrust.Result, fillingFinished);
+            FinishPie(futureCrust.Result, crust, pieFilling);
 
             timer.Stop();
 
@@ -38,20 +38,23 @@ namespace BakePie
 
         }
 
-        private static void FinishPie(bool crustFinished, bool fillingFinished)
+        private static void FinishPie(bool crustFinished, Crust crust, Filling pieFilling)
         {
-            if (crustFinished == false || fillingFinished == false)
+            if (crustFinished == false || pieFilling.isDone == false)
             {
                 throw new ArgumentException("Both crust and filling must be finished to finish pie!");
             }
-            
+
+            crust.pieFilling = pieFilling;
         }
 
-        private static bool PrepareFilling()
+        private static Filling PrepareFilling()
         {
+            Filling applePieFilling = new Filling(FillingType.Apple);
+            applePieFilling.isDone = true;
 
             Thread.Sleep(5000);
-            return true;
+            return applePieFilling;
         }
 
         private static bool BakeCrust(Crust crust)
