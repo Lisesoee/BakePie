@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BakePie
 {
-    class Crust
+    public class Crust
     {
         Boolean isDone { get; set; }
         Boolean isBurned { get; set; }

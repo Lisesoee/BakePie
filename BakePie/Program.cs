@@ -2,6 +2,7 @@
 using RestSharp;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 //using FeatureHubSDK;
@@ -15,12 +16,41 @@ namespace BakePie
 
         static void Main(string[] args)
         {
-            BakePie();
-            //Task bakePie = Task.Factory.StartNew (() => BakePie());
-            //bakePie.Wait();
+            Task<Recipe> recipeTask = createFeatureAwareRecipeAsync();
+            recipeTask.Wait();
+            Recipe pieRecipe = recipeTask.Result;
+
+            BakePie(pieRecipe);
         }
 
-        private static async void BakePie()
+        private static async Task<Recipe> createFeatureAwareRecipeAsync()
+        {
+            Recipe pieRecipe = new Recipe();
+            FeatureLogging.DebugLogger += (sender, s) => Console.WriteLine("DEBUG: " + s);
+            FeatureLogging.TraceLogger += (sender, s) => Console.WriteLine("TRACE: " + s);
+            FeatureLogging.InfoLogger += (sender, s) => Console.WriteLine("INFO: " + s);
+            FeatureLogging.ErrorLogger += (sender, s) => Console.WriteLine("ERROR: " + s);
+            var config = new EdgeFeatureHubConfig("http://featurehub:8085", "40a04c7d-6931-4203-8ac9-92ddd216afdb/6K4jw7EO7eWCZ4wNQjHdbkbix5xqKCPkFFjZlaze");
+            var fh = await config.NewContext().Build();
+            var shouldAddSprinkles = fh["AddSprinklesToPie"].IsEnabled;
+            Console.WriteLine(shouldAddSprinkles);
+
+            await Task.Run(() =>
+            {
+                if (shouldAddSprinkles)
+                {
+                    pieRecipe.PieTopping = Topping.Sprinkles;
+                }
+                else
+                {
+                    pieRecipe.PieTopping = Topping.None;
+                }
+            });            
+
+            return pieRecipe;   
+        }
+
+        private static void BakePie(Recipe pieRecipe)
         {
             var timer = new Stopwatch();
             Console.WriteLine("Baking pie...");
@@ -35,46 +65,26 @@ namespace BakePie
 
             Filling pieFilling = PrepareFilling();
 
-            FinishPie(futureCrust.Result, crust, pieFilling);
+            Pie pie = FinishPie(futureCrust.Result, crust, pieFilling);
 
-            FeatureLogging.DebugLogger += (sender, s) => Console.WriteLine("DEBUG: " + s);
-            FeatureLogging.TraceLogger += (sender, s) => Console.WriteLine("TRACE: " + s);
-            FeatureLogging.InfoLogger += (sender, s) => Console.WriteLine("INFO: " + s);
-            FeatureLogging.ErrorLogger += (sender, s) => Console.WriteLine("ERROR: " + s);
-            var config = new EdgeFeatureHubConfig("http://featurehub:8085", "40a04c7d-6931-4203-8ac9-92ddd216afdb/6K4jw7EO7eWCZ4wNQjHdbkbix5xqKCPkFFjZlaze");
-            var fh = await config.NewContext().Build();
-            var shouldAddSprinkles = fh["AddSprinklesToPie"].IsEnabled;
-            Console.WriteLine(shouldAddSprinkles);
-
-            await Task.Run(() =>
-            {
-                if (shouldAddSprinkles)
-                {
-                    AddSprinklesToPie();
-                }
-            });
-           
+            pie.PieTopping = pieRecipe.PieTopping;         
 
             timer.Stop();
 
             TimeSpan timeTaken = timer.Elapsed;
-            Console.WriteLine("Pie finished baking. Filling = " + pieFilling.FillingType +". Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
+            Console.WriteLine("Pie finished baking. Filling = " + pieFilling.FillingType +". Topping = " + pie.PieTopping + ". Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
 
         }
 
-        private static void AddSprinklesToPie()
-        {
-            Console.WriteLine("Added sprinkles to pie!");
-        }
-
-        private static void FinishPie(bool crustFinished, Crust crust, Filling pieFilling)
+        private static Pie FinishPie(bool crustFinished, Crust crust, Filling pieFilling)
         {
             if (crustFinished == false || pieFilling.isDone == false)
             {
                 throw new ArgumentException("Both crust and filling must be finished to finish pie!");
             }
 
-            crust.pieFilling = pieFilling;
+            Pie pie = new Pie(crust,pieFilling);
+            return pie;
         }
 
         private static Filling PrepareFilling()

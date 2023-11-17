@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace BakePie
 {
-    class Filling
+    public class Filling
     {
         public FillingType FillingType { get; set; }
+        
+        public Boolean isDone { get; set; }
+
         public Filling(FillingType fillingType)
         {
             FillingType = fillingType;
         }
-        public Boolean isDone { get; set; }
 
     }
 
