@@ -1,6 +1,14 @@
 version: '3.4'
 
 services:
+  featurehub:
+    image: featurehub/party-server:latest
+    restart: always
+    volumes:
+      - featurehub-h2-data:/db
+    ports:
+      - 8085:8085
+       
   rhubarbfillingservice:
     image: ${DOCKER_REGISTRY-}rhubarbfillingservice
     build:
@@ -15,4 +23,9 @@ services:
     build:
       context: .
       dockerfile: BakePie/Dockerfile
+    depends_on:
+      - featurehub
+
+volumes:
+  featurehub-h2-data:
 

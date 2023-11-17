@@ -1,8 +1,10 @@
-﻿using RestSharp;
+﻿using FeatureHubSDK;
+using RestSharp;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+//using FeatureHubSDK;
 
 namespace BakePie
 {
@@ -13,11 +15,12 @@ namespace BakePie
 
         static void Main(string[] args)
         {
-
             BakePie();
+            //Task bakePie = Task.Factory.StartNew (() => BakePie());
+            //bakePie.Wait();
         }
 
-        private static void BakePie()
+        private static async void BakePie()
         {
             var timer = new Stopwatch();
             Console.WriteLine("Baking pie...");
@@ -34,11 +37,34 @@ namespace BakePie
 
             FinishPie(futureCrust.Result, crust, pieFilling);
 
+            FeatureLogging.DebugLogger += (sender, s) => Console.WriteLine("DEBUG: " + s);
+            FeatureLogging.TraceLogger += (sender, s) => Console.WriteLine("TRACE: " + s);
+            FeatureLogging.InfoLogger += (sender, s) => Console.WriteLine("INFO: " + s);
+            FeatureLogging.ErrorLogger += (sender, s) => Console.WriteLine("ERROR: " + s);
+            var config = new EdgeFeatureHubConfig("http://featurehub:8085", "40a04c7d-6931-4203-8ac9-92ddd216afdb/6K4jw7EO7eWCZ4wNQjHdbkbix5xqKCPkFFjZlaze");
+            var fh = await config.NewContext().Build();
+            var shouldAddSprinkles = fh["AddSprinklesToPie"].IsEnabled;
+            Console.WriteLine(shouldAddSprinkles);
+
+            await Task.Run(() =>
+            {
+                if (shouldAddSprinkles)
+                {
+                    AddSprinklesToPie();
+                }
+            });
+           
+
             timer.Stop();
 
             TimeSpan timeTaken = timer.Elapsed;
             Console.WriteLine("Pie finished baking. Filling = " + pieFilling.FillingType +". Time taken: " + timeTaken.ToString(@"m\:ss\.fff"));
 
+        }
+
+        private static void AddSprinklesToPie()
+        {
+            Console.WriteLine("Added sprinkles to pie!");
         }
 
         private static void FinishPie(bool crustFinished, Crust crust, Filling pieFilling)
