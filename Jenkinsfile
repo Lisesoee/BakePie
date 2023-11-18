@@ -20,16 +20,31 @@ pipeline{
                 }
             }
         }
+        stage("Prepare test"){
+            steps{
+                echo "pretend: docker compose up indexer"
+            }
+        }
+        stage("Test"){
+            steps{
+                echo "pretend: docker compose up test"
+            }
+        }
+        stage("Deliver"){
+            steps{
+                echo "Pretend like we are pushing the docker compose file to DockerHub with appropriate dockerhub credentials"
+            }
+        }
     }
     post{
         always{
             echo "========Pipeline done========"
         }
         success{
-            echo "========pipeline executed successfully ========"
+            echo "========Pipeline executed successfully========"
         }
         failure{
-            echo "========pipeline execution failed========"
+            echo "========Pipeline execution failed========"
         }
     }
 }
