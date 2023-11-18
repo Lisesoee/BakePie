@@ -30,7 +30,8 @@ namespace BakePie
             FeatureLogging.TraceLogger += (sender, s) => Console.WriteLine("TRACE: " + s);
             FeatureLogging.InfoLogger += (sender, s) => Console.WriteLine("INFO: " + s);
             FeatureLogging.ErrorLogger += (sender, s) => Console.WriteLine("ERROR: " + s);
-            var config = new EdgeFeatureHubConfig("http://featurehub:8085", "40a04c7d-6931-4203-8ac9-92ddd216afdb/6K4jw7EO7eWCZ4wNQjHdbkbix5xqKCPkFFjZlaze");
+            // var config = new EdgeFeatureHubConfig("http://featurehub:8085", "40a04c7d-6931-4203-8ac9-92ddd216afdb/6K4jw7EO7eWCZ4wNQjHdbkbix5xqKCPkFFjZlaze"); // work pc
+            var config = new EdgeFeatureHubConfig("http://featurehub:8085", "e7620493-df7c-49b6-a077-0230707decd7/lYT79wrtG0FCczNzFhODhKxK98FxHH7JtLixGuch"); // home pc
             var fh = await config.NewContext().Build();
             var shouldAddSprinkles = fh["AddSprinklesToPie"].IsEnabled;
             Console.WriteLine(shouldAddSprinkles);
