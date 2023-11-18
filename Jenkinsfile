@@ -6,7 +6,7 @@ pipeline{
     stages{
         stage("Build"){
             steps{
-                sh "docker compose build"
+                bat "docker compose build"
             }
             post{
                 always{
