@@ -8,17 +8,11 @@ namespace RhubarbFillingService.Controllers
     public class RhubarbFillingServiceController : ControllerBase
     {
         [HttpGet]
-        //public Filling Get()
         public ActionResult<Filling> Get()
-            //public Filling Get()
         {
             Filling rhubarbPieFilling = new Filling(FillingType.Rhubarb);
             rhubarbPieFilling.isDone = true;
-            return rhubarbPieFilling;
-
-            //List<Filling> fillingList = new List<Filling>();
-            //fillingList.Add(rhubarbPieFilling); 
-            //return fillingList;            
+            return rhubarbPieFilling;      
         }
     }
 }
